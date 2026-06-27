@@ -1,0 +1,205 @@
+@import 'tailwindcss/base';
+@import 'tailwindcss/forms';
+@import 'tailwindcss/typography';
+@import 'tailwindcss/utilities';
+
+/* ============================================
+   CUSTOM STYLES FOR INTERNAL TEAM PORTAL
+   ============================================ */
+
+/* Global Styles */
+body {
+    background: #f0f2f5;
+    font-family: 'Figtree', sans-serif;
+}
+
+/* Card Hover Effects */
+.hover-lift {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.hover-lift:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 30px rgba(0,0,0,0.12);
+}
+
+/* Gradient Text */
+.gradient-text {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* Sidebar Gradient */
+.sidebar-gradient {
+    background: linear-gradient(135deg, #2d3436 0%, #1a1a2e 100%);
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 6px;
+}
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #5a6fd1;
+}
+
+/* Workspace Card */
+.workspace-card {
+    background: white;
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+    border: 1px solid rgba(0,0,0,0.04);
+    transition: all 0.3s ease;
+}
+.workspace-card:hover {
+    box-shadow: 0 8px 30px rgba(0,0,0,0.10);
+    border-color: #667eea40;
+}
+
+.workspace-card .icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #667eea20 0%, #764ba220 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+}
+
+/* Channel Badge */
+.channel-badge {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+.channel-badge.public {
+    background: #dbeafe;
+    color: #1d4ed8;
+}
+.channel-badge.private {
+    background: #fef3c7;
+    color: #b45309;
+}
+
+/* Message Bubbles */
+.message-bubble {
+    background: white;
+    border-radius: 12px;
+    padding: 16px 20px;
+    border: 1px solid #f0f0f0;
+    transition: all 0.2s ease;
+}
+.message-bubble:hover {
+    border-color: #667eea60;
+    box-shadow: 0 2px 12px rgba(102, 126, 234, 0.08);
+}
+.message-bubble.pinned {
+    border-left: 4px solid #f59e0b;
+    background: #fffbeb;
+}
+
+/* User Avatar */
+.avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 16px;
+    color: white;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+.avatar-sm {
+    width: 32px;
+    height: 32px;
+    font-size: 13px;
+}
+.avatar-xs {
+    width: 28px;
+    height: 28px;
+    font-size: 11px;
+}
+
+/* Navbar */
+.navbar-custom {
+    background: white;
+    border-bottom: 1px solid #e5e7eb;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+}
+
+/* Button Styles */
+.btn-primary-custom {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    transition: all 0.3s ease;
+}
+.btn-primary-custom:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.35);
+    color: white;
+}
+
+/* Stats Card */
+.stat-card {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    border: 1px solid #f0f0f0;
+}
+.stat-card .number {
+    font-size: 28px;
+    font-weight: 700;
+    color: #1a1a2e;
+}
+.stat-card .label {
+    font-size: 13px;
+    color: #6b7280;
+    font-weight: 500;
+}
+
+/* Status Badge */
+.status-badge {
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 500;
+}
+.status-badge.open { background: #fef3c7; color: #92400e; }
+.status-badge.in-progress { background: #dbeafe; color: #1e40af; }
+.status-badge.completed { background: #d1fae5; color: #065f46; }
+
+/* Empty State */
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+}
+.empty-state .icon {
+    font-size: 64px;
+    color: #d1d5db;
+    margin-bottom: 16px;
+}
+
+/* Footer */
+.footer-custom {
+    background: white;
+    border-top: 1px solid #e5e7eb;
+    padding: 20px 0;
+    color: #6b7280;
+    font-size: 14px;
+}
