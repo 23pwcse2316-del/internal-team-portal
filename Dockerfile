@@ -1,51 +1,39 @@
 FROM php:8.4-apache
 
-# Install system dependencies and Composer
-RUN apt-get update && apt-get install -y \
-    git \
-    unzip \
-    && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y git unzip && rm -rf /var/lib/apt/lists/*
 
-# Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Set working directory
 WORKDIR /var/www/html
 
-# Copy the entire application
 COPY . .
 
-# Install PHP dependencies
 ENV COMPOSER_ALLOW_SUPERUSER=1
 RUN composer install --no-interaction --no-dev --optimize-autoloader
 
-# Set proper ownership and permissions
 RUN chown -R www-data:www-data /var/www/html \
     && find /var/www/html -type f -exec chmod 644 {} \; \
     && find /var/www/html -type d -exec chmod 755 {} \; \
     && chmod -R 775 /var/www/html/storage \
     && chmod -R 775 /var/www/html/bootstrap/cache
 
-# ✅ FIXED: Create .env if missing, then generate key
+# ✅ FIX: Create .env and generate application key
 RUN touch .env && php artisan key:generate --no-interaction --force
 
-# Copy startup script
 COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
-# Enable mod_rewrite
 RUN a2enmod rewrite
 
-# Remove conflicting MPM files
+# ✅ CORRECTED PATH: mods-available (not modules-available)
 RUN rm -f /etc/apache2/mods-available/mpm_event.load \
     && rm -f /etc/apache2/mods-enabled/mpm_event.load \
     && rm -f /etc/apache2/mods-available/mpm_worker.load \
     && rm -f /etc/apache2/mods-enabled/mpm_worker.load
 
-# Set ServerName
 RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
 
-# Set DocumentRoot to public
+# ✅ CORRECTED: added 'g' flag to replace all occurrences
 RUN sed -i 's!/var/www/html!/var/www/html/public!g' /etc/apache2/sites-available/000-default.conf
 
 EXPOSE 80
