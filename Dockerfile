@@ -12,10 +12,10 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Set working directory
 WORKDIR /var/www/html
 
-# Copy the entire application (all files)
+# Copy the entire application
 COPY . .
 
-# Install PHP dependencies (allow superuser for Composer)
+# Install PHP dependencies
 ENV COMPOSER_ALLOW_SUPERUSER=1
 RUN composer install --no-interaction --no-dev --optimize-autoloader
 
@@ -26,10 +26,10 @@ RUN chown -R www-data:www-data /var/www/html \
     && chmod -R 775 /var/www/html/storage \
     && chmod -R 775 /var/www/html/bootstrap/cache
 
-# Create .env if it doesn't exist, then generate application key (force overwrite)
+# ✅ FIXED: Create .env if missing, then generate key
 RUN touch .env && php artisan key:generate --no-interaction --force
 
-# Copy the custom startup script
+# Copy startup script
 COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
