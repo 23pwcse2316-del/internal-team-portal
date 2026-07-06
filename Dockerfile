@@ -3,11 +3,9 @@ FROM php:8.2-apache
 # Copy your application files
 COPY . /var/www/html/
 
-# Fix permissions - Apache needs to read your files
+# Set proper ownership and permissions
 RUN chown -R www-data:www-data /var/www/html \
-    && chmod -R 755 /var/www/html \
-    && chmod -R 644 /var/www/html/*.php \
-    && chmod -R 644 /var/www/html/*.html \
+    && find /var/www/html -type f -exec chmod 644 {} \; \
     && find /var/www/html -type d -exec chmod 755 {} \;
 
 # Copy the custom startup script
