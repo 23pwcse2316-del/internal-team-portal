@@ -1,6 +1,6 @@
 FROM php:8.4-apache
 
-# Install system dependencies, Node.js, and SQLite
+# Install system dependencies, Node.js (for Vite), and SQLite
 RUN apt-get update && apt-get install -y \
     git \
     unzip \
@@ -14,7 +14,6 @@ RUN apt-get update && apt-get install -y \
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Set working directory
 WORKDIR /var/www/html
 
 # Copy all application files
@@ -24,7 +23,7 @@ COPY . .
 ENV COMPOSER_ALLOW_SUPERUSER=1
 RUN composer install --no-interaction --no-dev --optimize-autoloader
 
-# Install Node dependencies and build frontend assets
+# 🟢 Install Node dependencies and build Vite assets
 RUN npm install && npm run build
 
 # Set permissions
@@ -56,16 +55,16 @@ RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 # Enable Apache mod_rewrite
 RUN a2enmod rewrite
 
-# Remove conflicting MPM modules (fix previous Apache error)
+# Remove conflicting MPM modules
 RUN rm -f /etc/apache2/mods-available/mpm_event.load \
     && rm -f /etc/apache2/mods-enabled/mpm_event.load \
     && rm -f /etc/apache2/mods-available/mpm_worker.load \
     && rm -f /etc/apache2/mods-enabled/mpm_worker.load
 
-# Set ServerName to suppress FQDN warning
+# Set ServerName
 RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
 
-# Point DocumentRoot to public folder
+# Point DocumentRoot to public
 RUN sed -i 's!/var/www/html!/var/www/html/public!g' /etc/apache2/sites-available/000-default.conf
 
 EXPOSE 80
