@@ -1,19 +1,20 @@
 FROM php:8.2-apache
 
-# Copy your entire project into the container
+# Copy your entire project
 COPY . /var/www/html/
 
-# Fix: Apache MPM conflict (disable event, enable prefork for PHP)
-RUN a2dismod mpm_event && a2enmod mpm_prefork
+# Copy custom Apache MPM config
+COPY mpm.conf /etc/apache2/mods-available/mpm_prefork.conf
 
-# Enable mod_rewrite so .htaccess files work
+# Enable mod_rewrite
 RUN a2enmod rewrite
 
-# (Optional) Install any PHP extensions you need - uncomment if required
-# RUN docker-php-ext-install pdo_mysql mysqli
+# Force Apache to use only mpm_prefork
+RUN a2dismod mpm_event || true && \
+    a2dismod mpm_worker || true && \
+    a2enmod mpm_prefork
 
-# Set the working directory
+# Set working directory
 WORKDIR /var/www/html
 
-# Expose port 80
 EXPOSE 80
