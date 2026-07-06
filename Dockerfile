@@ -3,6 +3,13 @@ FROM php:8.2-apache
 # Copy your application files
 COPY . /var/www/html/
 
+# Fix permissions - Apache needs to read your files
+RUN chown -R www-data:www-data /var/www/html \
+    && chmod -R 755 /var/www/html \
+    && chmod -R 644 /var/www/html/*.php \
+    && chmod -R 644 /var/www/html/*.html \
+    && find /var/www/html -type d -exec chmod 755 {} \;
+
 # Copy the custom startup script
 COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 
@@ -12,11 +19,14 @@ RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 # Enable mod_rewrite
 RUN a2enmod rewrite
 
-# Remove the conflicting MPM load files during build (just to be safe)
+# Remove conflicting MPM files
 RUN rm -f /etc/apache2/mods-available/mpm_event.load \
     && rm -f /etc/apache2/mods-enabled/mpm_event.load \
     && rm -f /etc/apache2/mods-available/mpm_worker.load \
     && rm -f /etc/apache2/mods-enabled/mpm_worker.load
+
+# Add ServerName to suppress the FQDN warning
+RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
 
 # Set the working directory
 WORKDIR /var/www/html
