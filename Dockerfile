@@ -1,4 +1,4 @@
-FROM php:8.2-apache
+FROM php:8.4-apache
 
 # Install system dependencies and Composer
 RUN apt-get update && apt-get install -y \
@@ -15,7 +15,8 @@ WORKDIR /var/www/html
 # Copy only composer files first (for better caching)
 COPY composer.json composer.lock ./
 
-# Install PHP dependencies
+# Install PHP dependencies (allow superuser for Composer)
+ENV COMPOSER_ALLOW_SUPERUSER=1
 RUN composer install --no-interaction --no-dev --optimize-autoloader
 
 # Copy the rest of the application
@@ -27,6 +28,9 @@ RUN chown -R www-data:www-data /var/www/html \
     && find /var/www/html -type d -exec chmod 755 {} \; \
     && chmod -R 775 /var/www/html/storage \
     && chmod -R 775 /var/www/html/bootstrap/cache
+
+# Generate application key (if .env has APP_KEY empty)
+RUN php artisan key:generate --no-interaction
 
 # Copy the custom startup script
 COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
