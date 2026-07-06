@@ -19,5 +19,9 @@ RUN rm -f /etc/apache2/mods-available/mpm_event.load \
 RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
 
 WORKDIR /var/www/html
+
+# FIX: Set DocumentRoot to the public folder
+RUN sed -i 's!/var/www/html!/var/www/html/public!g' /etc/apache2/sites-available/000-default.conf
+
 EXPOSE 80
 ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
