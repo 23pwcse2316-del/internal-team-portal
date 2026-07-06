@@ -1,45 +1,19 @@
-FROM php:8.4-apache
+FROM php:8.2-apache
 
-# Install system dependencies
-RUN apt-get update && apt-get install -y \
-    git \
-    curl \
-    libpng-dev \
-    libonig-dev \
-    libxml2-dev \
-    zip \
-    unzip
+# Copy your entire project into the container
+COPY . /var/www/html/
 
-# Clear cache
-RUN apt-get clean && rm -rf /var/lib/apt/lists/*
+# Fix: Apache MPM conflict (disable event, enable prefork for PHP)
+RUN a2dismod mpm_event && a2enmod mpm_prefork
 
-# Install PHP extensions
-RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd
-
-# Enable Apache mod_rewrite
+# Enable mod_rewrite so .htaccess files work
 RUN a2enmod rewrite
 
-# Install Composer
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+# (Optional) Install any PHP extensions you need - uncomment if required
+# RUN docker-php-ext-install pdo_mysql mysqli
 
-# Set working directory
+# Set the working directory
 WORKDIR /var/www/html
 
-# Copy application files
-COPY . .
-
-# Install PHP dependencies
-RUN composer install --optimize-autoloader --no-interaction
-
-# Set permissions
-RUN chown -R www-data:www-data /var/www/html \
-    && chmod -R 755 /var/www/html/storage \
-    && chmod -R 755 /var/www/html/bootstrap/cache
-
-# Apache configuration
-COPY .htaccess /var/www/html/public/.htaccess
-RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
-
+# Expose port 80
 EXPOSE 80
-
-CMD ["apache2-foreground"]
