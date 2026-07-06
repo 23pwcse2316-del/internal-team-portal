@@ -12,10 +12,10 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Set working directory
 WORKDIR /var/www/html
 
-# Copy the entire application
+# Copy the entire application (all files)
 COPY . .
 
-# Install PHP dependencies
+# Install PHP dependencies (allow superuser for Composer)
 ENV COMPOSER_ALLOW_SUPERUSER=1
 RUN composer install --no-interaction --no-dev --optimize-autoloader
 
@@ -26,7 +26,7 @@ RUN chown -R www-data:www-data /var/www/html \
     && chmod -R 775 /var/www/html/storage \
     && chmod -R 775 /var/www/html/bootstrap/cache
 
-# Create .env if missing and generate application key (force overwrite)
+# Create .env if it doesn't exist, then generate application key (force overwrite)
 RUN touch .env && php artisan key:generate --no-interaction --force
 
 # Copy the custom startup script
