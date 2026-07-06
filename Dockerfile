@@ -12,15 +12,12 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Set working directory
 WORKDIR /var/www/html
 
-# Copy only composer files first (for better caching)
-COPY composer.json composer.lock ./
+# Copy the entire application (all files)
+COPY . .
 
 # Install PHP dependencies (allow superuser for Composer)
 ENV COMPOSER_ALLOW_SUPERUSER=1
 RUN composer install --no-interaction --no-dev --optimize-autoloader
-
-# Copy the rest of the application
-COPY . .
 
 # Set proper ownership and permissions
 RUN chown -R www-data:www-data /var/www/html \
