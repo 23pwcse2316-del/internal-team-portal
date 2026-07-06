@@ -23,8 +23,10 @@ COPY . .
 ENV COMPOSER_ALLOW_SUPERUSER=1
 RUN composer install --no-interaction --no-dev --optimize-autoloader
 
-# 🟢 Install Node dependencies and build Vite assets
-RUN npm install && npm run build
+# 🟢 Install Node dependencies, add Tailwind Forms plugin, and build assets
+RUN npm install \
+    && npm install -D @tailwindcss/forms \
+    && npm run build
 
 # Set permissions
 RUN chown -R www-data:www-data /var/www/html \
