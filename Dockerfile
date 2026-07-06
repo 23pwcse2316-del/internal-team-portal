@@ -1,20 +1,28 @@
 FROM php:8.2-apache
 
-# Copy your entire project
+# Copy your application files
 COPY . /var/www/html/
 
-# Copy custom Apache MPM config
-COPY mpm.conf /etc/apache2/mods-available/mpm_prefork.conf
+# Copy the custom startup script
+COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+
+# Make the script executable
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
 # Enable mod_rewrite
 RUN a2enmod rewrite
 
-# Force Apache to use only mpm_prefork
-RUN a2dismod mpm_event || true && \
-    a2dismod mpm_worker || true && \
-    a2enmod mpm_prefork
+# Remove the conflicting MPM load files during build (just to be safe)
+RUN rm -f /etc/apache2/mods-available/mpm_event.load \
+    && rm -f /etc/apache2/mods-enabled/mpm_event.load \
+    && rm -f /etc/apache2/mods-available/mpm_worker.load \
+    && rm -f /etc/apache2/mods-enabled/mpm_worker.load
 
-# Set working directory
+# Set the working directory
 WORKDIR /var/www/html
 
+# Expose port 80
 EXPOSE 80
+
+# Override the default command to use our startup script
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
