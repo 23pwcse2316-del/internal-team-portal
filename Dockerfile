@@ -1,0 +1,37 @@
+FROM php:8.4-apache
+
+RUN apt-get update && apt-get install -y git unzip && rm -rf /var/lib/apt/lists/*
+
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+WORKDIR /var/www/html
+
+COPY . .
+
+ENV COMPOSER_ALLOW_SUPERUSER=1
+RUN composer install --no-interaction --no-dev --optimize-autoloader
+
+RUN chown -R www-data:www-data /var/www/html \
+    && find /var/www/html -type f -exec chmod 644 {} \; \
+    && find /var/www/html -type d -exec chmod 755 {} \; \
+    && chmod -R 775 /var/www/html/storage \
+    && chmod -R 775 /var/www/html/bootstrap/cache
+
+RUN touch .env && php artisan key:generate --no-interaction --force
+
+COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+
+RUN a2enmod rewrite
+
+RUN rm -f /etc/apache2/mods-available/mpm_event.load \
+    && rm -f /etc/apache2/mods-enabled/mpm_event.load \
+    && rm -f /etc/apache2/mods-available/mpm_worker.load \
+    && rm -f /etc/apache2/mods-enabled/mpm_worker.load
+
+RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
+
+RUN sed -i 's!/var/www/html!/var/www/html/public!g' /etc/apache2/sites-available/000-default.conf
+
+EXPOSE 80
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
