@@ -23,7 +23,7 @@ COPY . .
 ENV COMPOSER_ALLOW_SUPERUSER=1
 RUN composer install --no-interaction --no-dev --optimize-autoloader
 
-# ✅ FIX: Install tailwindcss/forms then build Vite assets
+# Install tailwindcss/forms then build Vite assets
 RUN npm install \
     && npm install -D @tailwindcss/forms \
     && npm run build
@@ -35,12 +35,13 @@ RUN chown -R www-data:www-data /var/www/html \
     && chmod -R 775 /var/www/html/storage \
     && chmod -R 775 /var/www/html/bootstrap/cache
 
-# Configure .env, create SQLite DB, generate key, and run migrations
+# ✅ FIXED: Configure .env with APP_KEY, create SQLite DB, generate key, and run migrations
 RUN touch .env \
     && echo "APP_ENV=production" >> .env \
     && echo "APP_DEBUG=false" >> .env \
     && echo "DB_CONNECTION=sqlite" >> .env \
     && echo "SESSION_DRIVER=file" >> .env \
+    && echo "APP_KEY=base64:U5MrToTLabo9pay1qBA99/62T8V/VmASFbnVOYUhcxS=" >> .env \
     && mkdir -p database \
     && touch database/database.sqlite \
     && chmod 666 database/database.sqlite \
